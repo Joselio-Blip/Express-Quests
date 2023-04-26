@@ -10,11 +10,14 @@ const welcome = (req, res) => {
 };
 
 app.get("/", welcome);
+app.use(express.json());
 
 const movieHandlers = require("./movieHandlers");
 
 app.get("/api/movies", movieHandlers.getMovies);
 app.get("/api/movies/:id", movieHandlers.getMovieById);
+app.post("/api/movies", movieHandlers.postMovie);
+app.post("/api/users", movieHandlers.postUsers);
 
 const { getUsers, getUserById } = require("./userHandlers");
 
