@@ -29,7 +29,11 @@ app.get("/api/users/:id", userHandlers.getUserById);
 app.post("/api/users", userHandlers.postUser);
 app.put("/api/users/:id", userHandlers.updateUser);
 
+const { validateMovie } = require("./validators.js");
+app.post("/api/movies", validateMovie, movieHandlers.postMovie);
 
+const { validateUser } = require("./validators.js");
+app.post("/api/users", validateUser, userHandlers.postUser);
 
 app.listen(port, (err) => {
   if (err) {
