@@ -1,7 +1,10 @@
-const express = require("express");
-const app = express();
-const mysql = require("mysql2/promise");
 require("dotenv").config();
+const express = require("express");
+const mysql = require("mysql2/promise");
+
+const app = express();
+
+app.use(express.json())
 
 const port = process.env.APP_PORT ?? 5000;
 
@@ -10,40 +13,28 @@ const welcome = (req, res) => {
 };
 
 app.get("/", welcome);
-app.use(express.json());
 
 const movieHandlers = require("./movieHandlers");
 
 app.get("/api/movies", movieHandlers.getMovies);
 app.get("/api/movies/:id", movieHandlers.getMovieById);
 app.post("/api/movies", movieHandlers.postMovie);
-app.post("/api/users", movieHandlers.postUsers);
+app.put("/api/movies/:id", movieHandlers.updateMovie);
 
-const { getUsers, getUserById } = require("./userHandlers");
 
-app.get("/api/users", getUsers);
-app.get("/api/users/:id", getUserById);
+const userHandlers = require("./userHandlers");
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+app.get("/api/users", userHandlers.getUsers);
+app.get("/api/users/:id", userHandlers.getUserById);
+app.post("/api/users", userHandlers.postUser);
+app.put("/api/users/:id", userHandlers.updateUser);
+
+
+
+app.listen(port, (err) => {
+  if (err) {
+    console.error("Something bad happened");
+  } else {
+    console.log(`Server is listening on ${port}`);
+  }
 });
-
-pool
-  .getConnection()
-  .then(() => {
-    console.log("Connected to database");
-    app.listen(port, (err) => {
-      if (err) {
-        console.error("Something bad happened");
-      } else {
-        console.log(`Server is listening on ${port}`);
-      }
-    });
-  })
-  .catch((err) => {
-    console.error(err);
-  });
